@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+// 表名默认为结构体名称的复数
+// db.SingularTable(true) 关闭复数表名
 type Tag struct {
 	Model
 

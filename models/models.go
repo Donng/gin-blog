@@ -46,10 +46,12 @@ func init() {
 		log.Println(err)
 	}
 
+	// 更改默认表名称
 	gorm.DefaultTableNameHandler = func (db *gorm.DB, defaultTableName string) string  {
 		return tablePrefix + defaultTableName;
 	}
 
+	// 关闭表名的默认复数
 	db.SingularTable(true)
 	db.DB().SetMaxIdleConns(10)
 	db.DB().SetMaxOpenConns(100)
