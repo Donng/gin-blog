@@ -1,0 +1,4 @@
+[INFO][article.go:72]2019/06/24 17:02:35 [err.key: %s, err.message: %s state 状态只允许为0或1]
+[INFO][article.go:72]2019/06/24 17:02:35 [err.key: %s, err.message: %s tag_id 标签ID必须大于0]
+[INFO][article.go:71]2019/06/24 17:05:48 [state 状态只允许为0或1]
+[INFO][article.go:71]2019/06/24 17:05:48 [tag_id 标签ID必须大于0]
