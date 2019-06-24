@@ -80,14 +80,14 @@ func GetArticles(c *gin.Context) {
 }
 
 func AddArticle(c *gin.Context) {
-	var data map[string]interface{}
+	data := make(map[string]interface{})
 
 	// int 类型要手动转换
 	tagId := com.StrTo(c.Query("tag_id")).MustInt()
 	title := c.Query("title")
 	desc := c.Query("desc")
 	content := c.Query("content")
-	createdBy := c.Query("createdBy")
+	createdBy := c.Query("created_by")
 	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
 
 	valid := validation.Validation{}
@@ -105,7 +105,7 @@ func AddArticle(c *gin.Context) {
 			data["title"] = title
 			data["desc"] = desc
 			data["content"] = content
-			data["createBy"] = createdBy
+			data["created_by"] = createdBy
 			data["state"] = state
 
 			models.AddArticle(data)
@@ -132,7 +132,7 @@ func EditArticle(c *gin.Context) {
 	title := c.Query("title")
 	desc := c.Query("desc")
 	content := c.Query("content")
-	modifiedBy := c.Query("modifiedBy")
+	modifiedBy := c.Query("modified_by")
 	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
 
 	data := make(map[string]interface{})
@@ -161,7 +161,7 @@ func EditArticle(c *gin.Context) {
 			if content != "" {
 				data["content"] = content
 			}
-			data["modifiedBy"] = modifiedBy
+			data["modified_by"] = modifiedBy
 			data["state"] = state
 
 			models.EditArticle(id, data)
