@@ -1,10 +1,5 @@
 package models
 
-import (
-	"github.com/jinzhu/gorm"
-	"time"
-)
-
 // 表名默认为结构体名称的复数
 // db.SingularTable(true) 关闭复数表名
 type Tag struct {
@@ -70,14 +65,20 @@ func DeleteTag(id int) bool {
 	return true
 }
 
-func (tag *Tag) BeforeCreate(scope *gorm.Scope) error {
-	scope.SetColumn("CreatedOn", time.Now().Unix())
+func CleanAllTag() bool {
+	db.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{})
 
-	return nil
+	return true
 }
 
-func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
-	scope.SetColumn("ModifiedOn", time.Now().Unix())
-
-	return nil
-}
+//func (tag *Tag) BeforeCreate(scope *gorm.Scope) error {
+//	scope.SetColumn("CreatedOn", time.Now().Unix())
+//
+//	return nil
+//}
+//
+//func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
+//	scope.SetColumn("ModifiedOn", time.Now().Unix())
+//
+//	return nil
+//}
