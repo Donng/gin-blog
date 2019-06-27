@@ -3,18 +3,17 @@ package v1
 import (
 	"gin-blog/models"
 	"gin-blog/pkg/e"
+	"gin-blog/pkg/logging"
 	"gin-blog/pkg/setting"
 	"gin-blog/pkg/util"
 	"github.com/Unknwon/com"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
-	"gin-blog/pkg/logging"
 	"net/http"
 )
 
 func GetArticle(c *gin.Context) {
 	 id := com.StrTo(c.Param("id")).MustInt()
-
 	 valid := validation.Validation{}
 	 valid.Min(id, 1, "id").Message("ID必须大于0")
 
@@ -62,7 +61,7 @@ func GetArticles(c *gin.Context) {
 
 	code := e.INVALID_PARAMS
 	if ! valid.HasErrors() {
-		data["list"] = models.GetArticles(util.GetPage(c), setting.PageSize, maps)
+		data["list"] = models.GetArticles(util.GetPage(c), setting.App.PageSize, maps)
 		data["count"] = models.GetArticleTotal(maps)
 
 		code = e.SUCCESS

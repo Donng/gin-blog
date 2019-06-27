@@ -26,7 +26,7 @@ func Setup() {
 		dbType, dbName, user, password, host, tablePrefix string
 	)
 
-	database := setting.DatabaseSetting
+	database := setting.Database
 
 	dbType = database.Type
 	dbName = database.Name
