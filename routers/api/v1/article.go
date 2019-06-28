@@ -2,6 +2,7 @@ package v1
 
 import (
 	"gin-blog/models"
+	"gin-blog/pkg/app"
 	"gin-blog/pkg/e"
 	"gin-blog/pkg/logging"
 	"gin-blog/pkg/setting"
@@ -13,30 +14,25 @@ import (
 )
 
 func GetArticle(c *gin.Context) {
-	 id := com.StrTo(c.Param("id")).MustInt()
-	 valid := validation.Validation{}
-	 valid.Min(id, 1, "id").Message("ID必须大于0")
+	appG := app.Gin{c}
 
-	 var data interface{}
-	 code := e.INVALID_PARAMS
-	 if ! valid.HasErrors() {
-	 	if models.ExistArticleByID(id) {
-	 		data = models.GetArticle(id)
-			code = e.SUCCESS
-		} else {
-			code = e.ERROR_NOT_EXIST_ARTICLE
-		}
-	 } else {
-	 	for _, err := range valid.Errors {
-			logging.Info(err.Key, err.Message)
-		}
-	 }
+	id := com.StrTo(c.Param("id")).MustInt()
+	valid := validation.Validation{}
+	valid.Min(id, 1, "id").Message("ID必须大于0")
 
-	 c.JSON(http.StatusOK, gin.H{
-	 	"code": code,
-	 	"msg": e.GetMsg(code),
-	 	"data": data,
-	 })
+	if valid.HasErrors() {
+		app.MarkErrors(valid.Errors)
+		appG.Response(http.StatusOK, e.INVALID_PARAMS, nil)
+		return
+	}
+
+	if !models.ExistArticleByID(id) {
+		appG.Response(http.StatusOK, e.ERROR_NOT_EXIST_ARTICLE, nil)
+		return
+	}
+
+	data , _ := models.GetArticle(id)
+	appG.Response(http.StatusOK, e.SUCCESS, data)
 }
 
 func GetArticles(c *gin.Context) {
@@ -203,7 +199,7 @@ func DeleteArticle(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
-		"msg": e.GetMsg(code),
+		"msg":  e.GetMsg(code),
 		"data": make(map[string]string),
 	})
 }

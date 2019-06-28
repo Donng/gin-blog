@@ -1,6 +1,7 @@
 package setting
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -9,7 +10,7 @@ import (
 
 type AppConf struct {
 	JwtSecret       string
-	PageSize int
+	PageSize        int
 	RuntimeRootPath string
 
 	ImagePrefixUrl string
@@ -38,34 +39,46 @@ type DatabaseConf struct {
 	TablePrefix string
 }
 
+type RedisConf struct {
+	Host        string
+	Password    string
+	MaxIdle     int
+	MaxActive   int
+	IdleTimeout time.Duration
+}
+
 // var 方式定义全局变量
 var App = &AppConf{}
 var Server = &ServerConf{}
-var Database = &DatabaseConf{}
+// 设置默认值
+var Database = &DatabaseConf{Type: "mysql"}
+var Redis = &RedisConf{}
+
+var config *ini.File
 
 func Setup() {
-	file, e := ini.Load("conf/app.ini")
-	if e != nil {
-		log.Fatalf("Fail to parse app.ini: %v", e)
+	var err error
+	config, err = ini.Load("conf/app.ini")
+	if err != nil {
+		log.Fatalf("Fail to parse app.ini: %v", err)
 	}
 
-	e = file.Section("app").MapTo(App)
-	if e != nil {
-		log.Fatalf("app.ini MapTo App err: %v", e)
-	}
-
+	mapTo("app", App)
+	mapTo("redis", Redis)
+	mapTo("server", Server)
+	mapTo("database", Database)
+	fmt.Println(Database)
 	App.ImageMaxSize = App.ImageMaxSize * 1024 * 1024
 
-	e = file.Section("server").MapTo(Server)
-	if e != nil {
-		log.Fatalf("app.ini MapTo Server err: %v", e)
-	}
+	Redis.IdleTimeout = Redis.IdleTimeout * time.Second
 
 	Server.ReadTimeout = Server.ReadTimeout * time.Second
 	Server.WriteTimeout = Server.WriteTimeout * time.Second
+}
 
-	e = file.Section("database").MapTo(Database)
-	if e != nil {
-		log.Fatalf("app.ini MapTo Database err: %v", e)
+func mapTo(section string, v interface{}) {
+	err := config.Section(section).MapTo(v)
+	if err != nil {
+		log.Fatalf("config.MapTo %s err: %v", section, err)
 	}
 }
